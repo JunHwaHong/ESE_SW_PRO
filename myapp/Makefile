@@ -3,14 +3,14 @@ CFLAGS=-c
 INC_PATH=-I../include
 LIB_PATH=-L../lib
 INK_PATH=-lfuncs -lmysqlclient
-OUTPUT=mytest
-OBJS=mytest.o
+OUTPUT=WorkOut
+OBJS=workout.o
 
 $(OUTPUT) : $(OBJS)
 	$(CC) -o $(OUTPUT) $(LIB_PATH) mytest.o $(INK_PATH)
 
-mytest.o : mytest.c
-	$(CC) $(CFLAGS) $(INC_PATH)  mytest.c -o mytest.o
+mytest.o : workout.c
+	$(CC) $(CFLAGS) $(INC_PATH)  workout.c -o workout.o
 
 clean :
 	rm -f $(OBJS) $(OUTPUT)
