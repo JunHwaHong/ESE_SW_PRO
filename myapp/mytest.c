@@ -7,14 +7,14 @@
 #include <stdlib.h>
 #include "/usr/include/mysql/mysql.h"
 
-MYSQL *cons;
+
 //char *DB_NAME = "test";
 //char *DB_PASS = "1234";
 
 int main(void) {
 	MYSQL_RES *myresult;
 	MYSQL_ROW row;
-	
+	MYSQL *cons = mysql_init(NULL);	
 	int select_menu = 0;
 	unsigned int num_fields;
 	unsigned int num_rows;
