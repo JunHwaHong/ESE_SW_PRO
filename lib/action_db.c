@@ -4,7 +4,6 @@
 #include <string.h>
 #include "actdb.h"
 #include "/usr/include/mysql/mysql.h"
-
 #define DB_IP "222.121.186.100"
 
 
@@ -34,15 +33,21 @@ int access_login(MYSQL **connect) {
 int access_make_account(MYSQL **connect) {
 	MYSQL_RES *myresult;
 	MYSQL_ROW row;
-
+		char coach_name[15];
+		char coach_sex[8];
+		int coach_age;
+		int coach_career;
+	
 	char id_buf[20];
 	char pass_buf[20];
+	int choice=0;
 	char buf[256];
+	printf("1. Novice     2. Coach   :  ");
+	scanf("%d",&choice);
 	printf("MAKE ID : ");
 	scanf("%s", id_buf);
 	printf("MAKE PASSWD : ");
 	scanf("%s", pass_buf);
-	
 	connect_db_server(connect, "test", "1234");
 
 	sprintf(buf, "create user '%s'@'%s' identified by '%s'",id_buf, "%", pass_buf);
@@ -51,17 +56,40 @@ int access_make_account(MYSQL **connect) {
 
 	mysql_query(*connect, "use workout");
 
-	sprintf(buf, "create table %s (date INT)",id_buf);
-	mysql_query(*connect, buf);
-	memset(buf, 0, sizeof(buf));
+	if(choice == 1) // if, Novice
+	{
+		sprintf(buf, "create table %s (date INT)",id_buf);
+		mysql_query(*connect, buf);
+		memset(buf, 0, sizeof(buf));
+	
+		sprintf(buf, "grant all privileges on workout.%s to '%s'@'%s'", id_buf, id_buf, "%");
+		mysql_query(*connect, buf);
+		memset(buf, 0, sizeof(buf));
 
-	sprintf(buf, "grant all privileges on workout.%s to '%s'@'%s'", id_buf, id_buf, "%");
-	mysql_query(*connect, buf);
-	memset(buf, 0, sizeof(buf));
+		mysql_query(*connect, "flush privileges");
 
-	mysql_query(*connect, "flush privileges");
+		mysql_server_end();
+	}
+	else if(choice == 2)//if, Coach
+	{
+		printf("Enter Your Name : ");
+		scanf("%s",coach_name);
+		printf("Enter Your Sex : ");
+		scanf("%s",coach_sex);
+		printf("Enter Your age : ");
+		scanf("%d",&coach_age);
+		printf("Enter Your career duration : ");
+		scanf("%d",&coach_career);
 
-	mysql_server_end();
+		sprintf(buf, "insert into CoachList values('%s','%s',%d,%d)",coach_name,coach_sex,coach_age,coach_career);
+		mysql_query(*connect, buf);
+		memset(buf, 0, sizeof(buf));
+	
+		mysql_server_end();
+	}
+	else
+	{
+	}
 	return 0;
 }
 
