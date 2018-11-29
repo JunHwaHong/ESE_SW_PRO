@@ -66,12 +66,32 @@ int access_make_account(MYSQL **connect) {
 		mysql_query(*connect, buf);
 		memset(buf, 0, sizeof(buf));
 
-		mysql_query(*connect, "flush privileges");
+		sprintf(buf, "grant select on workout.CoachList to '%s'@'%s'",id_buf, "%");
+		mysql_query(*connect, buf);
+		memset(buf, 0, sizeof(buf));
 
+		sprintf(buf, "grant select,insert,update on workout.WhoIsMyCoach to '%s'@'%s'",id_buf,"%");
+		mysql_query(*connect, buf);
+		memset(buf, 0, sizeof(buf));
+
+		mysql_query(*connect, "flush privileges");
+		
 		mysql_server_end();
 	}
 	else if(choice == 2)//if, Coach
 	{
+
+		sprintf(buf, "grant all privileges on workout.CoachList to '%s'@'%s'",id_buf, "%");
+		mysql_query(*connect, buf);
+		memset(buf, 0, sizeof(buf));
+
+		sprintf(buf, "grant select on workout.WhoIsMyCoach to '%s'@'%s'",id_buf, "%");
+		mysql_query(*connect, buf);
+		memset(buf, 0, sizeof(buf));
+
+
+		mysql_query(*connect, "flush privileges");
+
 		printf("Enter Your Name : ");
 		scanf("%s",coach_name);
 		printf("Enter Your Sex : ");
