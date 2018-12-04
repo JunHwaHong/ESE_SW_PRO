@@ -33,15 +33,20 @@ int access_login(MYSQL **connect) {
 int access_make_account(MYSQL **connect) {
 	MYSQL_RES *myresult;
 	MYSQL_ROW row;
-		char coach_name[15];
-		char coach_sex[8];
-		int coach_age;
-		int coach_career;
+	int fields = 0;
+	int count = 0;
+
+	char coach_name[15];
+	char coach_sex[8];
+	int coach_age;
+	int coach_career;
 	
 	char id_buf[20];
 	char pass_buf[20];
 	int choice=0;
 	char buf[256];
+
+	char wantCoach[10];
 	printf("1. Novice     2. Coach   :  ");
 	scanf("%d",&choice);
 	printf("MAKE ID : ");
@@ -76,6 +81,25 @@ int access_make_account(MYSQL **connect) {
 
 		mysql_query(*connect, "flush privileges");
 		
+		printf("===================Coach List ====================  \n");
+		mysql_query(*connect,"select * from CoachList");
+		myresult = mysql_store_result(*connect);
+		fields = mysql_num_fields(myresult);
+
+		while( row = mysql_fetch_row(myresult))
+		{
+			
+		       	printf(" Name: %s Sex: %s Age: %s Career: %s \n",row[0],row[1],row[2],row[3]);
+			
+		}
+		
+		printf("=======================================  \n");
+		printf("Who is the Coach that you want? : ");
+		scanf("%s",wantCoach);
+		sprintf(buf, "insert into WhoIsMyCoach values('%s','%s')",id_buf,wantCoach);
+		mysql_query(*connect,buf);
+		
+		mysql_free_result(myresult);
 		mysql_server_end();
 	}
 	else if(choice == 2)//if, Coach
