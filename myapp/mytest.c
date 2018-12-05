@@ -31,7 +31,12 @@ int main(void) {
 			
 			if(choice == Novice)
 			{
-				goNovice();				
+				if(access_login(&cons)) {
+				printf("Cannot login Account\n");
+				return 0;
+				}
+	
+				goNovice(&cons);				
 			}
 			else
 			{
