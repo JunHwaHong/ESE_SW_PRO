@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,11 +41,12 @@ int access_make_account(MYSQL **connect) {
 	int coach_career;
 	
 	char id_buf[20];
+	char coach_buf[20];
 	char pass_buf[20];
 	int choice=0;
 	char buf[256];
 
-	char wantCoach[10];
+	char wantCoach[20];
 	printf("1. Novice     2. Coach   :  ");
 	scanf("%d",&choice);
 	printf("MAKE ID : ");
@@ -98,7 +98,26 @@ int access_make_account(MYSQL **connect) {
 		scanf("%s",wantCoach);
 		sprintf(buf, "insert into WhoIsMyCoach values('%s','%s')",id_buf,wantCoach);
 		mysql_query(*connect,buf);
-		
+		memset(buf, 0, sizeof(buf));
+		mysql_free_result(myresult);
+		row = 0;
+
+		sprintf(buf, "select COACH_ID from CoachList where COACH_NAME='%s'",wantCoach);
+		mysql_query(*connect, buf);
+		myresult = mysql_store_result(*connect);
+		while(row = mysql_fetch_row(myresult))  {
+			printf("Coach Id : %s\n", row[0]);
+			strcpy(coach_buf, row[0]);
+		}
+		memset(buf, 0, sizeof(buf));
+		printf(" selected coach id : %s\n", coach_buf);
+		sprintf(buf,"grant all privileges on workout.%s to '%s'@'%s'",id_buf, coach_buf, "%");
+		mysql_query(*connect, buf);
+		memset(buf,0,sizeof(buf));
+
+		mysql_query(*connect, "flush privileges");
+
+
 		mysql_free_result(myresult);
 		mysql_server_end();
 	}
@@ -125,7 +144,7 @@ int access_make_account(MYSQL **connect) {
 		printf("Enter Your career duration : ");
 		scanf("%d",&coach_career);
 
-		sprintf(buf, "insert into CoachList values('%s','%s',%d,%d)",coach_name,coach_sex,coach_age,coach_career);
+		sprintf(buf, "insert into CoachList values('%s','%s',%d,%d,'%s')",coach_name,coach_sex,coach_age,coach_career, id_buf);
 		mysql_query(*connect, buf);
 		memset(buf, 0, sizeof(buf));
 	
