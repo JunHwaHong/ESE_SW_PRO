@@ -173,11 +173,110 @@ void CreateJournal(MYSQL *connect)
 		}
 		else
 		{	
+			head = 0;
 			return;
 		}
 	}
 }
 
+void ViewJournal(MYSQL *connect)
+{
+	int i =0;
+	int choice;
+	char buf[256];
+	MYSQL_RES *myresult;
+	MYSQL_ROW row;
+	int fields;
+	char *user_id;
+	char *real_user_id;
+	char date[15];
+
+	mysql_query(connect,"use workout");
+
+	mysql_query(connect,"select user()");
+	myresult = mysql_store_result(connect);
+	row = mysql_fetch_row(myresult);
+	user_id = (char *)row[0];
+	real_user_id = strtok(user_id,"@");
+	
+
+	while(1)
+	{
+
+		printf("1.Exercise Log List 2.Back \n");
+		printf("Enter : ");
+		scanf("%d",&choice);
+
+		if(choice ==1)
+		{
+
+			printf("==================Log List====================\n");
+			//운동목록 가져오기
+			if(head == 0)
+			{
+				sprintf(buf,"show columns from workout.%s",real_user_id);
+				mysql_query(connect,buf);
+				memset(buf,0,sizeof(buf));
+				myresult = mysql_store_result(connect);
+				fields = mysql_num_fields(myresult);
+
+				row = mysql_fetch_row(myresult);//date를 빼주기 위함
+
+				while(row = mysql_fetch_row(myresult))
+				{
+					addNode((char *)row[0],i);
+					i++;
+				}
+			}
+		//===============================
+
+
+	
+			sprintf(buf,"select date from %s",real_user_id);
+			mysql_query(connect,buf);
+			myresult = mysql_store_result(connect);
+			memset(buf,0,sizeof(buf));
+
+			while(row = mysql_fetch_row(myresult))
+			{
+				printf("Date : %s \n",row[0]);
+			}
+
+			printf("Please Enter Date you want : ");
+			scanf("%s",date);
+
+			
+			printf("================Journal==================\n");
+			sprintf(buf,"select * from %s where date='%s'",real_user_id, date);
+			mysql_query(connect, buf);
+
+			myresult = mysql_store_result(connect);
+			row = mysql_fetch_row(myresult);
+			fields = mysql_num_fields(myresult);
+			struct node *temp = head;
+
+			printf("%s \n",row[0]);
+
+			while(temp != NULL)
+			{
+				for(i=1;i<fields ; i++)
+				{
+					if(row[i] != NULL)
+					{
+						printf(" %s : %s\n",temp->exercise,row[i]);
+					}
+					temp =temp->next;
+				}
+			}
+
+		}
+		else
+		{
+			head = 0;
+			break;
+		}
+	}
+}
 
 void goNovice(MYSQL **connect)
 {
@@ -187,15 +286,18 @@ void goNovice(MYSQL **connect)
 	printf("================Welcome Novice==================\n");
 	while(1)
 	{
-		printf("1. Create a journal 2. View Journal 3.View Coach Advice 4.exit \n");
+		printf("1. Create a journal 2.View Journal 3.View Coach Advice 4.exit \n");
 		printf("Enter : ");
 		scanf("%d",&choice);
 		if(choice ==1)
 		{
+			printf("================Create Journal==================\n");
 			CreateJournal(*connect);
 		}
 		else if(choice ==2)
 		{
+			printf("=================View Jouranl===================\n");
+			ViewJournal(*connect);
 		}
 		else if(choice ==3)
 		{
