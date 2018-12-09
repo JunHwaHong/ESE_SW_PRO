@@ -63,7 +63,7 @@ int access_make_account(MYSQL **connect) {
 
 	if(choice == 1) // if, Novice
 	{
-		sprintf(buf, "create table %s (date CHAR(15))",id_buf);
+		sprintf(buf, "create table %s (date CHAR(15), comment char(50))",id_buf);
 		mysql_query(*connect, buf);
 		memset(buf, 0, sizeof(buf));
 	

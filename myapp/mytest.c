@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include "/usr/include/mysql/mysql.h"
 #include "actnovice.h"
+#include "actcoach.h"
 
 #define Novice 1
 #define Coach 2
@@ -41,6 +42,11 @@ int main(void) {
 			else
 			{
 				//if Coach
+				if(access_login(&cons)) {
+					printf("Cannot login Account\n");
+					return 0;
+				}
+				goCoach(&cons);
 			}
 
 			break;
