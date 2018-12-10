@@ -24,10 +24,12 @@ int main(void) {
 	int choice =0;
 	char query[256];
 	show_enter_window();
+	printf("Enter : ");
 	scanf("%d", &select_menu);
 	switch (select_menu) {
 		case 1:
-			printf("Are you 1.Novice or 2.Coach ?? \n");
+			printf("1.Novice or 2.Coach \n");
+			printf("Enter : ");
 			scanf("%d",&choice);
 			
 			if(choice == Novice)
