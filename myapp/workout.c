@@ -1,40 +1,73 @@
 
+#include "actdb.h"
+#include "show.h"
 #include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "/usr/include/mysql/mysql.h"
-#include <string.h>
-#include "createUser.h"
+#include "actnovice.h"
+#include "actcoach.h"
+
+#define Novice 1
+#define Coach 2
+//char *DB_NAME = "test";
+//char *DB_PASS = "1234";
+
+int main(void) {
+	MYSQL_RES *myresult;
+	MYSQL_ROW row;
+	MYSQL *cons = mysql_init(NULL);	
+	int select_menu = 0;
+	unsigned int num_fields;
+	unsigned int num_rows;
+	int choice =0;
+	char query[256];
+	show_enter_window();
+	printf("Enter : ");
+	scanf("%d", &select_menu);
+	switch (select_menu) {
+		case 1:
+			printf("1.Novice or 2.Coach \n");
+			printf("Enter : ");
+			scanf("%d",&choice);
+			
+			if(choice == Novice)
+			{
+				if(access_login(&cons)) {
+				printf("Cannot login Account\n");
+				return 0;
+				}
+	
+				goNovice(&cons);				
+			}
+			else
+			{
+				//if Coach
+				if(access_login(&cons)) {
+					printf("Cannot login Account\n");
+					return 0;
+				}
+				goCoach(&cons);
+			}
+
+			break;
+		case 2:
+			if(access_make_account(&cons)) {
+				printf("Cannot make Account\n");
+				return 0;
+			}
+			printf("success to make new one");
+			return 0;
+			break;
+		case 3:
+			return 0;
+			break;
+
+	}
 
 
-int main(void)
-{
-  
-  int choice = 0;
-  char your_id[20] = "\0";
-  char your_pw[20] = "\0";
-  printf("환영합니다 \n");
-  printf("Workout Program for Novice\n");
- 
-  printf("1. 로그인   2. 가입하기  \n");
-  scanf("%d",&choice);
-     fgets(your_id,sizeof(your_id),stdin);//왜 넣어야 되는지 모르겠음
-   if(choice == 1)
-  {
-     //로그인 하는 경우...
-     printf("Enter your ID : ");
-     fgets(your_id,sizeof(your_id),stdin);
-     printf("Enter your PW : ");
-     fgets(your_pw,sizeof(your_pw),stdin);
+	mysql_close(cons);
 
-     puts(your_id);
-     puts(your_pw);
-   }
-  else
-  {
-     createNewUser(); 
-  }
-
-  return 0;
+	return 0;
 }
