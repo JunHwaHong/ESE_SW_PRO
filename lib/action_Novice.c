@@ -103,7 +103,7 @@ void CreateJournal(MYSQL *connect)
 			fields = mysql_num_fields(myresult);
 
 			row = mysql_fetch_row(myresult);//date를 빼주기 위함
-
+			row = mysql_fetch_row(myresult);//comment를 빼주기 위함
 			while(row = mysql_fetch_row(myresult))
 			{
 				printf("%d: %s ",i,row[0]);
@@ -221,7 +221,7 @@ void ViewJournal(MYSQL *connect)
 				fields = mysql_num_fields(myresult);
 
 				row = mysql_fetch_row(myresult);//date를 빼주기 위함
-
+				row = mysql_fetch_row(myresult);//comment를 빼주기 위함
 				while(row = mysql_fetch_row(myresult))
 				{
 					addNode((char *)row[0],i);
@@ -259,7 +259,7 @@ void ViewJournal(MYSQL *connect)
 
 			while(temp != NULL)
 			{
-				for(i=1;i<fields ; i++)
+				for(i=2;i<fields ; i++)
 				{
 					if(row[i] != NULL)
 					{
@@ -276,6 +276,70 @@ void ViewJournal(MYSQL *connect)
 			break;
 		}
 	}
+}
+
+void ViewComment(MYSQL *connect)
+{
+	int choice;
+	char buf[256];
+	MYSQL_RES *myresult;
+	MYSQL_ROW row;
+	int fields;
+	char *user_id;
+	char *real_user_id;
+	char date[15];
+
+	mysql_query(connect,"use workout");
+
+	mysql_query(connect,"select user()");
+	myresult = mysql_store_result(connect);
+	row = mysql_fetch_row(myresult);
+	user_id = (char *)row[0];
+	real_user_id = strtok(user_id,"@");
+	
+
+	while(1)
+	{
+			
+			sprintf(buf,"select date from %s",real_user_id);
+			mysql_query(connect,buf);
+			myresult = mysql_store_result(connect);
+			memset(buf,0,sizeof(buf));
+
+			while(row = mysql_fetch_row(myresult))
+			{
+				printf("Date : %s \n",row[0]);
+			}
+
+			printf("Please Enter Date you want : ");
+			scanf("%s",date);
+
+			
+			sprintf(buf,"select comment from %s where date='%s'",real_user_id, date);
+			mysql_query(connect, buf);
+
+			myresult = mysql_store_result(connect);
+			row = mysql_fetch_row(myresult);
+			fields = mysql_num_fields(myresult);
+
+			printf("================Comment==================\n");
+			printf("Coach Comment : %s \n",row[0]);
+			printf("=========================================\n");
+			printf("Do you Want view another comment? \n");
+			printf("1.Yes 2.No\n");
+			scanf("%d",&choice);
+
+			if(choice ==1)
+			{
+				continue;
+			}
+			else
+			{
+				return;
+			}
+
+	}
+	
 }
 
 void goNovice(MYSQL **connect)
@@ -301,6 +365,8 @@ void goNovice(MYSQL **connect)
 		}
 		else if(choice ==3)
 		{
+			printf("=================View Comment===================\n");
+			ViewComment(*connect);
 		}
 		else if(choice ==4)
 		{
